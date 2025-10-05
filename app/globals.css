@@ -62,3 +62,7 @@ body {
 .interactive-card {
   @apply transition duration-275 ease-in-out hover:scale-102 cursor-pointer
 }
+
+.color-picker {
+  @apply h-7 w-7 rounded-full shadow-s cursor-pointer transition duration-100 ease-out hover:scale-115
+}

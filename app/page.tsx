@@ -1,8 +1,15 @@
 'use client';
 import Image from "next/image";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import clsx from 'clsx';
+/* ES6 */
+import * as htmlToImage from 'html-to-image';
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
+import { IoMdDownload } from "react-icons/io";
+import download from 'downloadjs';
+import { FaDownload } from "react-icons/fa";
+
 
 export default function Home() {
   const str = "Thanks for using A&A Carousel Pro! I hope this tool is fun and easy to use.\n\nFor any questions or concerns, please reach out to Zak via Slack."
@@ -15,7 +22,14 @@ export default function Home() {
   const [profilePic, setProfilePic] = useState<string>('defaultpfp.png');
   const [background, setBackground] = useState<string>('https://www.bigfacebrand.com/cdn/shop/files/HP-HERO-MOB-BIGFACE-GP_722x.jpg?v=1755550700');
   const [theme, setTheme] = useState<number>(2);
-  const [gradient, setGradient] = useState<string>("brand-deep-navy"); // TODO
+  const [gradient, setGradient] = useState<string>("brand-orange");
+  const [showAttachedPhoto, setShowAttachedPhoto] = useState<boolean>(false);
+  const [attachedPhoto, setAttachedPhoto] = useState<string>('https://people.com/thmb/NZ_Mvi60JbKPSr58QHfehKuahd4=/4000x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(573x250:575x252)/travis-kelce-patrick-mahomes-092523-be2688eb393148a2a8b359ec426e5030.jpg');
+
+  const imageRef = useRef<HTMLDivElement>(null);
+  const tweetLightRef = useRef<HTMLDivElement>(null);
+  const tweetNavyRef = useRef<HTMLDivElement>(null);
+  const tweetDarkRef = useRef<HTMLDivElement>(null);
 
   const handlePfpInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,6 +53,17 @@ export default function Home() {
     reader.readAsDataURL(file);
   }
 
+  const handleAttachedPhotoInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    var reader = new FileReader();
+    reader.onload = () => {
+      setAttachedPhoto(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+
   const handleThemeChange = (code: number) => {
     if (!Number.isNaN(code)) {
       setTheme(code);
@@ -48,6 +73,37 @@ export default function Home() {
   const handleGradientChange = (color: string) => {
     setGradient(color);
   }
+
+  const handleDownloadCarousel = async () => {
+    if (!imageRef.current) return;
+
+    const el = imageRef.current;
+
+    // choose a scale factor (2x or 3x usually looks crisp)
+    const scale = 3;
+
+    const style = {
+      transform: "scale(" + scale + ")",
+      transformOrigin: "top left",
+      width: el.offsetWidth + "px",
+      height: el.offsetHeight + "px",
+    };
+
+    const options = {
+      width: el.offsetWidth * scale,
+      height: el.offsetHeight * scale,
+      style,
+    };
+
+    try {
+      const dataUrl = await htmlToImage.toPng(el, options);
+      download(dataUrl, "tweet.png");
+    } catch (err) {
+      console.error("Error exporting image:", err);
+    }
+  };
+
+
 
   // Function: tweetContents
   // Purpose: Returns Tweet contents from states
@@ -81,6 +137,9 @@ export default function Home() {
 
             {/* Bottom Row */}
             <p className="whitespace-pre-wrap">{content}</p>
+            {
+              showAttachedPhoto && <img src={attachedPhoto} className="rounded-md mt-4" alt="" />
+            }
 
           </div>
       );
@@ -109,6 +168,9 @@ export default function Home() {
 
           {/* Bottom Row */}
           <p className="whitespace-pre-wrap text-gray-900">{content}</p>
+          {
+            showAttachedPhoto && <img src={attachedPhoto} className="rounded-md mt-4" alt="" />
+          }
         </div>
       );
     }
@@ -146,6 +208,13 @@ export default function Home() {
           onClick={() => {setShowLeage(!showLeague)}}>
             League
           </button>
+          <button className={clsx(
+            "px-2 rounded-lg cursor-pointer transition duration-250 eas-in-out",
+            showAttachedPhoto ? "bg-white text-dark shadow-m" : "bg-medium text-text-muted shadow-m"
+          )} 
+          onClick={() => {setShowAttachedPhoto(!showAttachedPhoto)}}>
+            Photo
+          </button>
 
         </div>
         <input type="text" placeholder="Name" className="bg-light rounded-4xl px-3 py-1 shadow-s text-muted w-full"
@@ -167,11 +236,15 @@ export default function Home() {
           onChange={(e) => {
             setContent(e.target.value);
           }}/>
+          <input type="file" accept="image/*"
+          className=""
+          onChange={(e) => {handleAttachedPhotoInput(e)}}
+          />
       </div>
 
       {/* Composite */}
       <div className="flex flex-col justify-between gap-7">
-        <div className="flex relative rounded-3xl overflow-hidden">
+        <div className="flex relative overflow-hidden" id="carouselImage" ref={imageRef}>
           {/* Tweet Dark*/}
           {theme == 0 &&
           <div className="flex flex-col p-5 h-min w-[400px] scale-85 absolute bottom-4 bg-medium rounded-2xl shadow-s z-10">
@@ -206,27 +279,35 @@ export default function Home() {
           <img src={background} alt="" className="w-[400px] h-[500px] object-cover"/>
         </div> 
         {/* Button Tray */}
-        <div className="flex flex-row gap-2 justify-start items-center bg-light rounded-full px-5 py-2 shadow-m">
-          <div className="h-7 w-7 rounded-full bg-white bg-gradient-to-b from-transparent to-black/40 shadow-s cursor-pointer"
-          onClick={() => {
-            handleGradientChange("brand-white")
-          }}
-          ></div>
-          <div className="h-7 w-7 rounded-full bg-brand-orange bg-gradient-to-t from-transparent to-white/30 shadow-s cursor-pointer"
-          onClick={() => {
-            handleGradientChange("brand-orange")
-          }}
-          ></div>
-          <div className="h-7 w-7 rounded-full bg-brand-deep-navy bg-gradient-to-t from-transparent to-white/10 shadow-s cursor-pointer"
-          onClick={() => {
-            handleGradientChange("brand-deep-navy")
-          }}
-          ></div>
-          <div className="h-7 w-7 rounded-full bg-black bg-gradient-to-t from-transparent to-white/25 shadow-s cursor-pointer"
-          onClick={() => {
-            handleGradientChange("brand-black")
-          }}
-          ></div>
+        <div className="flex flex-row gap-2 justify-between items-center bg-light rounded-full px-5 py-2 shadow-m">
+          <div className="flex flex-row gap-2 justify-start items-cetner">
+            <div className="color-picker  bg-white bg-gradient-to-b from-transparent to-black/40"
+            onClick={() => {
+              handleGradientChange("brand-white")
+            }}
+            ></div>
+            <div className="color-picker h-7 w-7 rounded-full shadow-s cursor-pointer bg-brand-orange bg-gradient-to-t from-transparent to-white/30 "
+            onClick={() => {
+              handleGradientChange("brand-orange")
+            }}
+            ></div>
+            <div className="color-picker h-7 w-7 rounded-full shadow-s cursor-pointer bg-brand-deep-navy bg-gradient-to-t from-transparent to-white/10 "
+            onClick={() => {
+              handleGradientChange("brand-deep-navy")
+            }}
+            ></div>
+            <div className="color-picker bg-black bg-gradient-to-t from-transparent to-white/25 "
+            onClick={() => {
+              handleGradientChange("brand-black")
+            }}
+            ></div>
+          </div>
+          <div>
+            <IoMdDownload size={25} className="transition duration-100 ease-in-out cursor-pointer hover:brightness-75"
+            onClick={handleDownloadCarousel}
+            />
+          </div>
+
         </div>       
       </div>
 
@@ -234,19 +315,29 @@ export default function Home() {
       {/* Right Menu */}
       <div className="flex flex-col justify-between gap-10">
         <p className="self-center font-semibold text-lg">Theme</p>
-        {/* Tweet Dark*/}
-        <div className="flex flex-col p-5 h-min w-[400px] bg-medium rounded-2xl shadow-s interactive-card"
-        onClick={() => {
-          handleThemeChange(0);
-        }}
-        >
-          {tweetContents(0)}
+        <div className="flex flex-col">
+          {/* Tweet Dark*/}
+          <div className="flex flex-col p-5 h-min w-[400px] bg-medium rounded-2xl shadow-s interactive-card"
+            onClick={() => {
+              handleThemeChange(0);
+            }}
+            ref={tweetDarkRef}
+            >
+            {tweetContents(0)}
+          </div>
+          <div className="flex flex-col self-end justify-center items-center w-8 h-8 rounded-full bg-white">
+            <IoMdDownload size={25} className="w-min h-min transition duration-100 ease-in-out cursor-pointer hover:brightness-75"
+            onClick={handleDownloadCarousel}
+            color="black"
+            />
+          </div>
         </div>
         {/* Tweet Navy*/}
         <div className="flex flex-col p-5 h-min w-[400px] bg-brand-deep-navy rounded-2xl shadow-s interactive-card"
         onClick={() => {
           handleThemeChange(1);
         }}
+        ref={tweetNavyRef}
         >
           {tweetContents(0)}
         </div>
@@ -255,9 +346,11 @@ export default function Home() {
         onClick={() => {
           handleThemeChange(2);
         }}
+        ref={tweetLightRef}
         >
           {tweetContents(1)}
         </div>
+        
       </div>
 
     </div>
