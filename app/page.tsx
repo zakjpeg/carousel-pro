@@ -15,6 +15,7 @@ export default function Home() {
   const [profilePic, setProfilePic] = useState<string>('defaultpfp.png');
   const [background, setBackground] = useState<string>('https://www.bigfacebrand.com/cdn/shop/files/HP-HERO-MOB-BIGFACE-GP_722x.jpg?v=1755550700');
   const [theme, setTheme] = useState<number>(2);
+  const [gradient, setGradient] = useState<string>("brand-deep-navy"); // TODO
 
   const handlePfpInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -42,6 +43,10 @@ export default function Home() {
     if (!Number.isNaN(code)) {
       setTheme(code);
     }
+  }
+
+  const handleGradientChange = (color: string) => {
+    setGradient(color);
   }
 
   // Function: tweetContents
@@ -165,8 +170,7 @@ export default function Home() {
       </div>
 
       {/* Composite */}
-      <div className="flex flex-col justify-between gap-10">
-        <p className="self-center font-semibold text-lg">Preview</p>
+      <div className="flex flex-col justify-between gap-7">
         <div className="flex relative rounded-3xl overflow-hidden">
           {/* Tweet Dark*/}
           {theme == 0 &&
@@ -187,13 +191,43 @@ export default function Home() {
           </div>
           }
           {/* Gradient Overlay */}
-          <div className="w-full h-1/2 absolute bottom-0 bg-gradient-to-t from-brand-deep-navy to-brand-orange/0"></div>
+          <div className={clsx(
+            "w-full h-1/2 absolute bottom-0 bg-gradient-to-t",
+            gradient == "brand-deep-navy" && "from-brand-deep-navy",
+            gradient == "brand-orange" && "from-brand-orange",
+            gradient == "brand-white" && "from-brand-white",
+            gradient == "brand-black" && "from-brand-black",
+            "to-brand-orange/0"
+          )}></div>
           {/* Gradient Overlay */}
           <div className="w-full h-1/5 absolute top-0 bg-gradient-to-b from-black/55 to-black/0"></div>
 
           {/* Background Image */}
           <img src={background} alt="" className="w-[400px] h-[500px] object-cover"/>
-        </div>        
+        </div> 
+        {/* Button Tray */}
+        <div className="flex flex-row gap-2 justify-start items-center bg-light rounded-full px-5 py-2 shadow-m">
+          <div className="h-7 w-7 rounded-full bg-white bg-gradient-to-b from-transparent to-black/40 shadow-s cursor-pointer"
+          onClick={() => {
+            handleGradientChange("brand-white")
+          }}
+          ></div>
+          <div className="h-7 w-7 rounded-full bg-brand-orange bg-gradient-to-t from-transparent to-white/30 shadow-s cursor-pointer"
+          onClick={() => {
+            handleGradientChange("brand-orange")
+          }}
+          ></div>
+          <div className="h-7 w-7 rounded-full bg-brand-deep-navy bg-gradient-to-t from-transparent to-white/10 shadow-s cursor-pointer"
+          onClick={() => {
+            handleGradientChange("brand-deep-navy")
+          }}
+          ></div>
+          <div className="h-7 w-7 rounded-full bg-black bg-gradient-to-t from-transparent to-white/25 shadow-s cursor-pointer"
+          onClick={() => {
+            handleGradientChange("brand-black")
+          }}
+          ></div>
+        </div>       
       </div>
 
 

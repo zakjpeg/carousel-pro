@@ -23,6 +23,8 @@
   --color-brand-yellow: #FFC500;
   --color-brand-silver: #A0B6B4;
   --color-brand-deep-navy: #081F2E;
+  --color-brand-black: #000000;
+  --color-brand-white: #ffffff;
   
   /* Text colors */
   --color-text: oklch(0.96 0 264);
