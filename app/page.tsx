@@ -14,20 +14,27 @@ export default function Home() {
   const [verified, setVerified] = useState<boolean>(true);
   const [profilePic, setProfilePic] = useState<string>('defaultpfp.png');
 
-  const handleImgInput = (e: Blob) => {
+  const handleImgInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     var reader = new FileReader();
-    reader.readAsDataURL(e);
+    reader.onload = () => {
+      setProfilePic(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   }
 
 
   return (
-    <div className="m-15 flex flex-row justify-center gap-10">
+    <div className="m-15 flex flex-col md:flex-row items-center md:items-start justify-center gap-10">
       {/* Left Menu */}
-      <div className="flex flex-col p-8 h-120 w-2/6 bg-medium rounded-2xl shadow-s">
+      <div className="flex flex-col p-8 h-120 md:w-2/6 bg-medium rounded-2xl shadow-s">
         <div className="font-bold mb-20 text-xl">Carousel Pro
-          <p className="font-normal text-sm">Export carousel elements that look like tweets.</p>
+          <p className="font-normal text-sm text-text-muted">Export carousel elements that look like tweets.</p>
         </div>
         <input type="file" accept="image/*"
+        className=""
         onChange={(e) => {handleImgInput(e)}}
         />
         {/* Button Row*/}
@@ -78,7 +85,7 @@ export default function Home() {
           <div className="flex flex-row justify-between mb-3">
             {/* Left Side */}
             <div className="flex flex-row">
-              <img src={profilePic} className="w-[50px] rounded-full mr-3 border-2 border-brand-orange"/>
+              <img src={profilePic} className="w-[50px] h-[50px] rounded-full mr-3 border-2 border-brand-orange object-cover"/>
               {/* Name and Handle */}
               <div className="flex flex-col">
                 <p className="font-semibold text-lg flex flex-row items-center gap-2">{name}{verified && <RiVerifiedBadgeFill color="1DA1F2"/>}
@@ -96,6 +103,34 @@ export default function Home() {
 
           {/* Bottom Row */}
           <p className="whitespace-pre-wrap">{content}</p>
+
+        </div>
+
+        {/* Tweet Light*/}
+        <div className="flex flex-col p-8 h-min w-[400px] bg-white rounded-2xl shadow-s">
+
+          {/* Top Row */}
+          <div className="flex flex-row justify-between mb-3">
+            {/* Left Side */}
+            <div className="flex flex-row">
+              <img src={profilePic} className="w-[50px] h-[50px] rounded-full mr-3 border-2 border-brand-orange object-cover"/>
+              {/* Name and Handle */}
+              <div className="flex flex-col">
+                <p className="font-semibold text-black text-lg flex flex-row items-center gap-2">{name}{verified && <RiVerifiedBadgeFill color="1DA1F2"/>}
+                </p>
+                <p className="font-regular text-sm text-gray-400">@{handle}</p>
+              </div>
+            </div>
+            {/* Right Side */}
+            { showLeague &&
+            <div className="bg-brand-orange font-semibold h-min w-min px-1.5 py-0.5 rounded-lg text-sm">
+              {league}
+            </div>
+            }
+          </div>
+
+          {/* Bottom Row */}
+          <p className="whitespace-pre-wrap text-gray-900">{content}</p>
 
         </div>
 
