@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color: var(--color-text);
+  font-family: 'Inter Tight', sans-serif;
 }
 
 @theme inline {
@@ -10,17 +12,40 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+  
+  /* Color tokens */
+  --color-dark: oklch(0.1 0 264);
+  --color-medium: oklch(0.2 0 264);
+  --color-light: oklch(0.3 0 264);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Brand Colors */
+  --color-brand-orange: #FD4819;
+  --color-brand-yellow: #FFC500;
+  --color-brand-silver: #A0B6B4;
+  --color-brand-deep-navy: #081F2E;
+  
+  /* Text colors */
+  --color-text: oklch(0.96 0 264);
+  --color-text-muted: oklch(0.76 0 264);
+
+  /* Shadow tokens */
+  --shadow-s:
+    inset 0 1px 2px #ffffff30,
+    0 1px 2px #00000030,
+    0 2px 4px #00000015;
+
+  --shadow-m:
+    inset 0 1px 2px #ffffff50,
+    0 2px 4px #00000030,
+    0 4px 8px #00000015;
+
+  --shadow-l:
+    inset 0 1px 2px #ffffff70,
+    0 4px 6px #00000030,
+    0 6px 10px #00000015;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-dark);
+  color: var(--color-text);
 }
