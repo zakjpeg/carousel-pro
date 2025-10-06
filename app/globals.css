@@ -66,3 +66,15 @@ body {
 .color-picker {
   @apply h-7 w-7 rounded-full shadow-s cursor-pointer transition duration-100 ease-out hover:scale-115
 }
+
+.file-input-label {
+  @apply aspect-square w-25 bg-light flex flex-col rounded-xl shadow-s justify-center items-center gap-1 text-text-muted
+}
+
+.file-input-label-big {
+  @apply w-full h-25 bg-light flex flex-col rounded-xl shadow-s justify-center items-center gap-1 text-text-muted
+}
+
+.image-control-button {
+  @apply flex justify-center items-center w-9 h-9 rounded-full cursor-pointer shadow-s
+}
