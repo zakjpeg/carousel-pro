@@ -15,6 +15,9 @@ import { TbArrowAutofitHeight } from "react-icons/tb";
 import { MdOutlineDelete } from "react-icons/md";
 import { MdOutlineVerified } from "react-icons/md";
 import { HiOutlineTag } from "react-icons/hi";
+import { TbBoxAlignBottom } from "react-icons/tb";
+import { AiOutlineEyeInvisible } from "react-icons/ai";
+
 
 
 
@@ -36,6 +39,7 @@ export default function Home() {
   const [showAttachedPhoto, setShowAttachedPhoto] = useState<boolean>(false);
   const [attachedPhoto, setAttachedPhoto] = useState<string>();
   const [autoFit, setAutoFit] = useState<boolean>(true);
+  const [alignMode, setAlignMode] = useState<number>(0); // 0 1 or 2: Bottom, Top, Center
   
 
   const imageRef = useRef<HTMLDivElement>(null);
@@ -120,6 +124,14 @@ export default function Home() {
 
   const handleAutoFit = () => {
     setAutoFit(!autoFit);
+  }
+
+  const handleAlignMode = () => {
+    if (alignMode == 2) {
+      setAlignMode(0);
+    } else {
+      setAlignMode(alignMode + 1);
+    }
   }
 
   const removeAttachedPhoto = () => {
@@ -259,6 +271,15 @@ export default function Home() {
           {/* Button Row*/}
           <div className="flex flex-col sm:flex-row justify-end items-center gap-3 h-min text-sm">
             <div
+              className="image-control-button bg-light"
+              onClick={handleAlignMode}
+            >
+              <TbBoxAlignBottom
+                size="18px"
+                color={clsx(!verified && "black")}
+                />
+            </div>
+            <div
               className={clsx(
                 "image-control-button",
                 verified && "bg-light",
@@ -325,7 +346,7 @@ export default function Home() {
         />
         <label
           htmlFor="attachedPhotoUpload"
-          className={clsx("file-input-label-big mb-2")}
+          className={clsx("file-input-label-big mb-2 cursor-pointer")}
         >
           <AiOutlineFileImage size="32px" />
           <p className="text-sm">Attachment</p>
@@ -372,41 +393,61 @@ export default function Home() {
           ref={imageRef}
         >
           {/* Wordmark */}
-          <div className="max-w-15 top-5 left-1/2 absolute z-11">
-            <img src="wordmark.png" alt="" />
+          <div className="max-w-14 absolute top-6 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+            <img src="wordmark.png" alt="" className={clsx(alignMode == 1 && "hidden")} />
           </div>
 
           {/* Tweet Dark*/}
           {theme == 0 && (
-            <div className="flex flex-col p-5 h-min w-[400px] scale-85 absolute bottom-4 bg-medium rounded-2xl shadow-s z-10">
+            <div className={clsx(
+              "flex flex-col p-5 h-min w-[400px] scale-85 absolute bg-medium rounded-2xl shadow-s z-10",
+              alignMode == 0 && "bottom-4",
+              alignMode == 1 && "top-4",
+              alignMode == 2 && "top-1/2 -translate-y-1/2"
+            )}>
               {tweetContents(0)}
             </div>
           )}
           {/* Tweet Navy*/}
           {theme == 1 && (
-            <div className="flex flex-col p-5 h-min w-[400px] scale-85 absolute bottom-4 bg-brand-deep-navy rounded-2xl shadow-s z-10">
+            <div className={clsx(
+              "flex flex-col p-5 h-min w-[400px] scale-85 absolute bg-brand-deep-navy rounded-2xl shadow-s z-10",
+              alignMode == 0 && "bottom-4",
+              alignMode == 1 && "top-4",
+              alignMode == 2 && "top-1/2 -translate-y-1/2"
+            )}>
               {tweetContents(0)}
             </div>
           )}
           {/* Tweet Light*/}
           {theme == 2 && (
-            <div className="flex flex-col p-5 h-min w-[400px] scale-85 absolute bottom-[12px] bg-white rounded-2xl shadow-s z-10">
+            <div className={clsx(
+              "flex flex-col p-5 h-min w-[400px] scale-85 absolute bg-white rounded-2xl shadow-s z-10",
+              alignMode == 0 && "bottom-4",
+              alignMode == 1 && "top-4",
+              alignMode == 2 && "top-1/2 -translate-y-1/2"
+            )}>
               {tweetContents(1)}
             </div>
           )}
           {/* Gradient Overlay */}
           <div
             className={clsx(
-              "w-full h-1/2 absolute bottom-0 bg-gradient-to-t",
+              "w-full h-1/2 absolute ",
               gradient == "brand-deep-navy" && "from-brand-deep-navy",
               gradient == "brand-orange" && "from-brand-orange",
               gradient == "brand-white" && "from-brand-white",
               gradient == "brand-black" && "from-brand-black",
-              "to-brand-orange/0"
+              "to-brand-orange/0",
+              alignMode == 1 ? "bg-gradient-to-b top-0":"bg-gradient-to-t bottom-0"
+
             )}
           ></div>
           {/* Gradient Overlay */}
-          <div className="w-full h-1/5 absolute top-0 bg-gradient-to-b from-black/55 to-black/0"></div>
+          <div className={clsx(
+            "w-full h-1/5 absolute from-black/55 to-black/0",
+            alignMode == 1 ? "bottom-0 bg-gradient-to-t" : "top-0 bg-gradient-to-b"
+            )}></div>
 
           {/* Background Image */}
           <img
@@ -417,7 +458,7 @@ export default function Home() {
         </div>
         {/* Button Tray */}
         <div className="flex flex-row gap-2 justify-between items-center bg-light rounded-full px-5 py-2 shadow-m">
-          <div className="flex flex-row gap-2 justify-start items-cetner">
+          <div className="flex flex-row gap-2 justify-start items-center">
             <div
               className="color-picker  bg-white bg-gradient-to-b from-transparent to-black/40"
               onClick={() => {
@@ -442,6 +483,15 @@ export default function Home() {
                 handleGradientChange("brand-black");
               }}
             ></div>
+            <div
+              className="color-picker bg-light bg-gradient-to-t from-transparent to-white/25 flex justify-center items-center"
+              onClick={() => {
+                handleGradientChange("transparent");
+              }}
+            >
+            <AiOutlineEyeInvisible />
+
+            </div>
           </div>
           <div>
             <IoMdDownload
@@ -455,7 +505,6 @@ export default function Home() {
 
       {/* Right Menu */}
       <div className="flex flex-col justify-between gap-10">
-        <p className="self-center font-semibold text-lg">Theme</p>
         <div className="flex flex-col">
           {/* Tweet Dark*/}
           <div
@@ -467,14 +516,15 @@ export default function Home() {
           >
             {tweetContents(0)}
           </div>
-          <div className="flex flex-col self-end justify-center items-center w-8 h-8 rounded-full bg-white">
+          {/* WIP: Carousel Download Button*/}
+          {/* <div className="flex flex-col self-end justify-center items-center w-8 h-8 rounded-full bg-white">
             <IoMdDownload
               size={25}
               className="w-min h-min transition duration-100 ease-in-out cursor-pointer hover:brightness-75"
               onClick={handleDownloadCarousel}
               color="black"
             />
-          </div>
+          </div> */}
         </div>
         {/* Tweet Navy*/}
         <div
