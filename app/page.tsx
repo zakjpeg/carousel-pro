@@ -40,6 +40,8 @@ export default function Home() {
   const [attachedPhoto, setAttachedPhoto] = useState<string>();
   const [autoFit, setAutoFit] = useState<boolean>(true);
   const [alignMode, setAlignMode] = useState<number>(0); // 0 1 or 2: Bottom, Top, Center
+  const [attention, setAttention] = useState<string>('')
+  const [attentionColor, setAttentionColor] = useState<string>('text-twitter-blue');
   
 
   const imageRef = useRef<HTMLDivElement>(null);
@@ -134,6 +136,10 @@ export default function Home() {
     }
   }
 
+  const handleAttentionColor = (color: string) => {
+    setAttentionColor(color)
+  }
+
   const removeAttachedPhoto = () => {
     setShowAttachedPhoto(false);
     setAttachedPhoto('');
@@ -170,7 +176,8 @@ export default function Home() {
             </div>
 
             {/* Bottom Row */}
-            <p className="whitespace-pre-wrap">{content}</p>
+            <p className="whitespace-pre-wrap"><p className={`font-semibold inline ${attentionColor}`}>
+              {attention}{attention !== "" && ": "}</p>{content}</p>
             {
               showAttachedPhoto && <img src={attachedPhoto} className={clsx(
                 "rounded-md mt-4 w-full object-cover",
@@ -204,7 +211,8 @@ export default function Home() {
           </div>
 
           {/* Bottom Row */}
-          <p className="whitespace-pre-wrap text-gray-900">{content}</p>
+          <p className="whitespace-pre-wrap text-gray-900"><p className={`font-semibold inline ${attentionColor}`}>
+              {attention}{attention !== "" && ": "}</p>{content}</p>
           {
             showAttachedPhoto && <img src={attachedPhoto} className={clsx(
               "rounded-md mt-4 w-full object-cover",
@@ -334,6 +342,28 @@ export default function Home() {
               setLeague(e.target.value);
             }}
           />
+        </div>
+        <div className="flex flex-row gap-3 items-center justify-start mb-3">
+          <input
+            type="text"
+            placeholder="Attention"
+            className="bg-light rounded-4xl px-3 py-1 shadow-s text-muted w-1/3"
+            onChange={(e) => {
+              setAttention(e.target.value);
+            }}
+          />
+          <div
+            className="color-picker bg-twitter-blue bg-gradient-to-b from-transparent to-black/40"
+            onClick={() => {
+              handleAttentionColor("text-twitter-blue");
+            }}
+          ></div>
+          <div
+            className="color-picker bg-brand-orange bg-gradient-to-b from-transparent to-black/40"
+            onClick={() => {
+              handleAttentionColor("text-brand-orange");
+            }}
+          ></div>
         </div>
         <textarea
           name=""
