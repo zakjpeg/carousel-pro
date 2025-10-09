@@ -1,13 +1,4 @@
-import type { NextConfig } from "next";
-
-const isProd = process.env.NODE_ENV === "production";
-
-const nextConfig: NextConfig = {
-  ...(isProd && { output: "export" }),
-  basePath: isProd ? "/nextjs-github-pages" : "",
-  images: {
-    unoptimized: isProd,
-  },
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
 
 export default nextConfig;
