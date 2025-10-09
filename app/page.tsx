@@ -40,7 +40,7 @@ export default function Home() {
   const [attachedPhoto, setAttachedPhoto] = useState<string>();
   const [autoFit, setAutoFit] = useState<boolean>(true);
   const [alignMode, setAlignMode] = useState<number>(0); // 0 1 or 2: Bottom, Top, Center
-  const [attention, setAttention] = useState<string>('')
+  const [attention, setAttention] = useState<string>('');
   const [attentionColor, setAttentionColor] = useState<string>('text-twitter-blue');
   
 
